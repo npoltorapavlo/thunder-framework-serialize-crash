@@ -1,0 +1,20 @@
+name: build
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ${{github.repository}}
+      - run: |
+          sudo apt update
+          sudo apt install -y cmake
+      - run: sh +x ${GITHUB_REPOSITORY}/.github/workflows/BuildThunder.sh
+      - run: |
+          cmake -S ${GITHUB_REPOSITORY} -B build/${GITHUB_REPOSITORY} \
+            -DCMAKE_INSTALL_PREFIX="install" \
+            -DCMAKE_CXX_FLAGS="-Wall -Werror"
+          cmake --build build/${GITHUB_REPOSITORY} --target install
